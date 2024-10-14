@@ -1,4 +1,5 @@
 import os
+import time
 import mne
 import redis
 import psycopg2
@@ -13,18 +14,36 @@ POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'mypassword')
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 
+# Retry function for PostgreSQL connection
+def connect_to_postgres(retries=5, delay=5):
+    conn = None
+    for attempt in range(retries):
+        try:
+            print(f"Attempting to connect to PostgreSQL... (Attempt {attempt + 1})")
+            conn = psycopg2.connect(
+                dbname=POSTGRES_DB,
+                user=POSTGRES_USER,
+                password=POSTGRES_PASSWORD,
+                host=POSTGRES_HOST
+            )
+            print("Connected to PostgreSQL!")
+            return conn
+        except psycopg2.OperationalError as e:
+            print(f"PostgreSQL connection failed: {e}")
+            if attempt < retries - 1:
+                print(f"Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                print("Failed to connect to PostgreSQL after several attempts.")
+                raise e
+    return conn
+
 def main():
     # Connect to Redis
     r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
-    # Connect to PostgreSQL
-    conn = psycopg2.connect(
-        dbname=POSTGRES_DB,
-        user=POSTGRES_USER,
-        password=POSTGRES_PASSWORD,
-        host=POSTGRES_HOST
-    )
-
+    # Connect to PostgreSQL with retries
+    conn = connect_to_postgres(retries=5, delay=5)
     cursor = conn.cursor()
 
     # Download and read the dataset using MNE
