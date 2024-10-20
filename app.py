@@ -48,7 +48,7 @@ def main():
 
     # Download and read the dataset using MNE
     data_path = mne.datasets.sample.data_path()
-    raw = mne.io.read_raw_fif(data_path + '/MEG/sample/sample_audvis_raw.fif', preload=True)
+    raw = mne.io.read_raw_fif(data_path / 'MEG' / 'sample' / 'sample_audvis_raw.fif', preload=True)
     data, times = raw[:]
 
     # Save data to Redis
