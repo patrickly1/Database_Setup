@@ -11,6 +11,7 @@ The sample EEG data [mne.datasets.sample.data_path()](https://mne.tools/stable/g
 ```
 git clone git@github.com:patrickly1/Database_Setup.git
 ```
+Ensure you have docker installed. See Learn More for installation guide. 
 
 2. Compose Docker Build
 
@@ -27,3 +28,4 @@ Here is the documention used for the database setup:
 - [Postgres](https://www.postgresql.org/)
 - [Redis](https://redis.io/)
 - [TimeScale](https://www.timescale.com/)
+- [Docker](https://docs.docker.com/)
